@@ -8,22 +8,30 @@ import { Provider } from 'react-redux'
 import thunk from 'redux-thunk'
 //routerでラップするライブラリ
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
+//デバッグするためためのライブラリ
+import { composeWithDevTools } from 'redux-devtools-extension'
 
 import reducer from './reducers'
 import './index.css';
 import EventsIndex from './components/events_index';
 import EventsNew from './components/events_new';
+import EventsShow from './components/events_show';
 import * as serviceWorker from './serviceWorker';
 
+//開発環境においてはデバッグできるように
+const enhancer = process.env.NODE_ENV === 'development' ?
+ composeWithDevTools(applyMiddleware(thunk)) : applyMiddleware(thunk)
 //アプリ内の全てのstateはstoreに集約される
-const store = createStore(reducer, applyMiddleware(thunk))
+const store = createStore(reducer, enhancer)
 
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
       <Switch>
-        <Route exact path="/events/new" component={EventsNew} />
+        <Route path="/events/new" component={EventsNew} />
+        <Route path="/events/:id" component={EventsShow} />
         <Route exact path="/" component={EventsIndex} />
+        <Route exact path="/events" component={EventsIndex} />
       </Switch>
     </BrowserRouter>
   </Provider>,
